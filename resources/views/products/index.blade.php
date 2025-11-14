@@ -40,6 +40,86 @@
             </div>
         @endif
 
+        <!-- Alerta de productos por vencer -->
+        @php
+            $productosPorVencer = collect();
+            if (isset($productos) && $productos->count() > 0) {
+                $productosPorVencer = $productos->filter(function($product) {
+                    $vencimiento = \Carbon\Carbon::parse($product->fecha_vencimiento);
+                    $diasRestantes = now()->diffInDays($vencimiento, false);
+                    return $diasRestantes >= 0 && $diasRestantes < 30;
+                });
+            }
+            
+            $productosVencidos = collect();
+            if (isset($productos) && $productos->count() > 0) {
+                $productosVencidos = $productos->filter(function($product) {
+                    $vencimiento = \Carbon\Carbon::parse($product->fecha_vencimiento);
+                    return now()->diffInDays($vencimiento, false) < 0;
+                });
+            }
+        @endphp
+
+        @if($productosVencidos->count() > 0)
+            <div class="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-red-600 dark:text-red-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                    </svg>
+                    <div>
+                        <h3 class="text-sm font-medium text-red-800 dark:text-red-400 mb-1">
+                            ¡Alerta! Tienes {{ $productosVencidos->count() }} producto(s) vencido(s)
+                        </h3>
+                        <ul class="text-sm text-red-700 dark:text-red-300 list-disc list-inside">
+                            @foreach($productosVencidos->take(3) as $productoVencido)
+                                @php
+                                    $vencimiento = \Carbon\Carbon::parse($productoVencido->fecha_vencimiento);
+                                    $diasVencido = abs(now()->diffInDays($vencimiento, false));
+                                @endphp
+                                <li>
+                                    <strong>{{ $productoVencido->nombre }}</strong> - 
+                                    Vencido hace {{ $diasVencido }} día(s)
+                                </li>
+                            @endforeach
+                            @if($productosVencidos->count() > 3)
+                                <li>...y {{ $productosVencidos->count() - 3 }} producto(s) más</li>
+                            @endif
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if($productosPorVencer->count() > 0)
+            <div class="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <div>
+                        <h3 class="text-sm font-medium text-yellow-800 dark:text-yellow-400 mb-1">
+                            Productos por vencer ({{ $productosPorVencer->count() }})
+                        </h3>
+                        <ul class="text-sm text-yellow-700 dark:text-yellow-300 list-disc list-inside">
+                            @foreach($productosPorVencer->take(3) as $productoPorVencer)
+                                @php
+                                    $vencimiento = \Carbon\Carbon::parse($productoPorVencer->fecha_vencimiento);
+                                    $diasRestantes = now()->diffInDays($vencimiento, false);
+                                @endphp
+                                <li>
+                                    <strong>{{ $productoPorVencer->nombre }}</strong> - 
+                                    Vence en {{ $diasRestantes }} día(s) ({{ $vencimiento->format('d/m/Y') }})
+                                </li>
+                            @endforeach
+                            @if($productosPorVencer->count() > 3)
+                                <li>...y {{ $productosPorVencer->count() - 3 }} producto(s) más</li>
+                            @endif
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         @if($productos->isEmpty())
             <div class="bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 p-12 text-center">
                 @if(request('search'))
@@ -75,22 +155,22 @@
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                            @foreach($productos as $producto)
+                            @foreach($productos as $product)
                                 <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-900/50">
-                                    <td class="px-6 py-4 text-sm text-zinc-900 dark:text-white">{{ $producto->nombre }}</td>
+                                    <td class="px-6 py-4 text-sm text-zinc-900 dark:text-white">{{ $product->nombre }}</td>
                                     <td class="px-6 py-4">
                                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                            @if($producto->cantidad_unidades > 10) bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
-                                            @elseif($producto->cantidad_unidades > 0) bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400
+                                            @if($product->cantidad_unidades > 10) bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400
+                                            @elseif($product->cantidad_unidades > 0) bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400
                                             @else bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400
                                             @endif">
-                                            {{ $producto->cantidad_unidades }} unidades
+                                            {{ $product->cantidad_unidades }} unidades
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-zinc-600 dark:text-zinc-400">{{ number_format($producto->peso_por_unidad, 2) }} kg</td>
+                                    <td class="px-6 py-4 text-sm text-zinc-600 dark:text-zinc-400">{{ number_format($product->peso_por_unidad, 2) }} kg</td>
                                     <td class="px-6 py-4 text-sm">
                                         @php
-                                            $vencimiento = \Carbon\Carbon::parse($producto->fecha_vencimiento);
+                                            $vencimiento = \Carbon\Carbon::parse($product->fecha_vencimiento);
                                             $diasRestantes = now()->diffInDays($vencimiento, false);
                                         @endphp
                                         <span class="@if($diasRestantes < 0) text-red-600 dark:text-red-400 @elseif($diasRestantes < 30) text-yellow-600 dark:text-yellow-400 @else text-zinc-600 dark:text-zinc-400 @endif">
@@ -104,7 +184,7 @@
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex gap-2">
-                                            <a href="{{ route('products.show', $producto) }}" 
+                                            <a href="{{ route('products.show', $product) }}" 
                                                class="inline-flex items-center px-3 py-1.5 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
                                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -112,14 +192,14 @@
                                                 </svg>
                                                 Ver
                                             </a>
-                                            <a href="{{ route('products.edit', $producto) }}" 
+                                            <a href="{{ route('products.edit', $product) }}" 
                                                class="inline-flex items-center px-3 py-1.5 text-sm text-zinc-600 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300">
                                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                                 </svg>
                                                 Editar
                                             </a>
-                                            <form method="POST" action="{{ route('products.destroy', $producto) }}" 
+                                            <form method="POST" action="{{ route('products.destroy', $product) }}" 
                                                   onsubmit="return confirm('¿Estás seguro de eliminar este producto?')"
                                                   class="inline">
                                                 @csrf
