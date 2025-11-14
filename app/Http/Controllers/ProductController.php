@@ -7,9 +7,18 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $productos = Product::with(['createdBy', 'updatedBy'])->latest()->get(); 
+        $query = Product::with(['createdBy', 'updatedBy'])->latest();
+
+        // Búsqueda
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('nombre', 'LIKE', "%{$search}%");
+        }
+
+        $productos = $query->paginate(10);
+        
         return view('products.index', compact('productos'));
     }
 
