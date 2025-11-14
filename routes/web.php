@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 use Livewire\Volt\Volt;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\SaleController;
+use App\Http\Controllers\SaleDetailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,12 +17,6 @@ use App\Http\Controllers\UserController;
 Route::middleware('auth')->get('/', function () {
     return redirect()->route('dashboard');
 })->name('home');
-
-/* Ruta opcional si algún día quieres volver a mostrar la vista de welcome
-Route::get('/', function () {
-    return view('welcome');
-})->name('home');
-*/
 
 Route::view('dashboard', 'dashboard')
     ->middleware(['auth', 'verified'])
@@ -66,8 +63,28 @@ Route::middleware(['auth'])->group(function () {
     | CRUD de Usuarios
     |--------------------------------------------------------------------------
     */
-
-    // Rutas para gestionar usuarios (index, create, edit, delete, etc)
     Route::resource('users', UserController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | CRUD de Productos
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('products', ProductController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | CRUD de Ventas
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('sales', SaleController::class)->except(['edit', 'update', 'destroy']);
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Eliminar detalle de venta
+    |--------------------------------------------------------------------------
+    */
+    Route::delete('sale-details/{saleDetail}', [SaleDetailController::class, 'destroy'])
+        ->name('sale-details.destroy');
 
 });

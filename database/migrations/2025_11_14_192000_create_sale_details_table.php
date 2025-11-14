@@ -10,13 +10,15 @@ return new class extends Migration
     {
         Schema::create('sale_details', function (Blueprint $table) {
             $table->id();
-
+            
             $table->unsignedBigInteger('sale_id');
-            $table->unsignedBigInteger('product_id');
-            $table->integer('cantidad');
-
             $table->foreign('sale_id')->references('id')->on('sales')->onDelete('cascade');
+            
+            $table->unsignedBigInteger('product_id');
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            
+            $table->integer('cantidad');
+            $table->decimal('subtotal', 10, 2);
 
             $table->timestamps();
         });

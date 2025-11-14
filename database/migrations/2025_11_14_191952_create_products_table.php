@@ -10,17 +10,16 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre', 150);
+            $table->string('nombre', 100);
             $table->integer('cantidad_unidades');
             $table->date('fecha_vencimiento');
-            $table->string('cantidad_porcion', 50);
-
-            // Auditoría opcional
-            $table->unsignedBigInteger('creado_por')->nullable();
-            $table->unsignedBigInteger('actualizado_por')->nullable();
-
-            $table->foreign('creado_por')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('actualizado_por')->references('id')->on('users')->onDelete('set null');
+            $table->decimal('peso_por_unidad', 8, 2);
+            
+            $table->unsignedBigInteger('creado_por');
+            $table->foreign('creado_por')->references('id')->on('users')->onDelete('cascade');
+            
+            $table->unsignedBigInteger('actualizado_por');
+            $table->foreign('actualizado_por')->references('id')->on('users')->onDelete('cascade');
 
             $table->timestamps();
         });
