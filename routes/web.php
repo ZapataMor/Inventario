@@ -15,7 +15,7 @@ use App\Http\Controllers\SaleDetailController;
 */
 
 Route::middleware('auth')->get('/', function () {
-    return redirect()->route('dashboard');
+    return redirect()->route('products.index');
 })->name('home');
 
 Route::view('dashboard', 'dashboard')

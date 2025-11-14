@@ -66,25 +66,25 @@
                     <svg class="w-5 h-5 text-red-600 dark:text-red-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
                     </svg>
-                    <div>
-                        <h3 class="text-sm font-medium text-red-800 dark:text-red-400 mb-1">
-                            ¡Alerta! Tienes {{ $productosVencidos->count() }} producto(s) vencido(s)
+                    <div class="flex-1">
+                        <h3 class="text-sm font-semibold text-red-800 dark:text-red-400 mb-2">
+                            ¡Productos vencidos! ({{ $productosVencidos->count() }})
                         </h3>
-                        <ul class="text-sm text-red-700 dark:text-red-300 list-disc list-inside">
+                        <div class="space-y-1.5">
                             @foreach($productosVencidos->take(3) as $productoVencido)
                                 @php
                                     $vencimiento = \Carbon\Carbon::parse($productoVencido->fecha_vencimiento);
-                                    $diasVencido = abs(now()->diffInDays($vencimiento, false));
+                                    $diasVencido = abs((int)now()->diffInDays($vencimiento, false));
                                 @endphp
-                                <li>
-                                    <strong>{{ $productoVencido->nombre }}</strong> - 
-                                    Vencido hace {{ $diasVencido }} día(s)
-                                </li>
+                                <div class="flex items-center justify-between bg-red-100 dark:bg-red-900/30 rounded px-3 py-2">
+                                    <span class="text-sm font-medium text-red-900 dark:text-red-300">{{ $productoVencido->nombre }}</span>
+                                    <span class="text-xs text-red-700 dark:text-red-400">Vencido hace {{ $diasVencido }} día{{ $diasVencido != 1 ? 's' : '' }}</span>
+                                </div>
                             @endforeach
                             @if($productosVencidos->count() > 3)
-                                <li>...y {{ $productosVencidos->count() - 3 }} producto(s) más</li>
+                                <p class="text-xs text-red-700 dark:text-red-400 italic pl-3">...y {{ $productosVencidos->count() - 3 }} producto(s) más</p>
                             @endif
-                        </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -96,25 +96,27 @@
                     <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400 mr-2 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
-                    <div>
-                        <h3 class="text-sm font-medium text-yellow-800 dark:text-yellow-400 mb-1">
+                    <div class="flex-1">
+                        <h3 class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">
                             Productos por vencer ({{ $productosPorVencer->count() }})
                         </h3>
-                        <ul class="text-sm text-yellow-700 dark:text-yellow-300 list-disc list-inside">
+                        <div class="space-y-1.5">
                             @foreach($productosPorVencer->take(3) as $productoPorVencer)
                                 @php
                                     $vencimiento = \Carbon\Carbon::parse($productoPorVencer->fecha_vencimiento);
-                                    $diasRestantes = now()->diffInDays($vencimiento, false);
+                                    $diasRestantes = (int)now()->diffInDays($vencimiento, false);
                                 @endphp
-                                <li>
-                                    <strong>{{ $productoPorVencer->nombre }}</strong> - 
-                                    Vence en {{ $diasRestantes }} día(s) ({{ $vencimiento->format('d/m/Y') }})
-                                </li>
+                                <div class="flex items-center justify-between bg-yellow-100 dark:bg-yellow-900/30 rounded px-3 py-2">
+                                    <span class="text-sm font-medium text-yellow-900 dark:text-yellow-300">{{ $productoPorVencer->nombre }}</span>
+                                    <span class="text-xs text-yellow-700 dark:text-yellow-400">
+                                        Vence en {{ $diasRestantes }} día{{ $diasRestantes != 1 ? 's' : '' }} ({{ $vencimiento->format('d/m/Y') }})
+                                    </span>
+                                </div>
                             @endforeach
                             @if($productosPorVencer->count() > 3)
-                                <li>...y {{ $productosPorVencer->count() - 3 }} producto(s) más</li>
+                                <p class="text-xs text-yellow-700 dark:text-yellow-400 italic pl-3">...y {{ $productosPorVencer->count() - 3 }} producto(s) más</p>
                             @endif
-                        </ul>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -171,14 +173,14 @@
                                     <td class="px-6 py-4 text-sm">
                                         @php
                                             $vencimiento = \Carbon\Carbon::parse($product->fecha_vencimiento);
-                                            $diasRestantes = now()->diffInDays($vencimiento, false);
+                                            $diasRestantes = (int)now()->diffInDays($vencimiento, false);
                                         @endphp
                                         <span class="@if($diasRestantes < 0) text-red-600 dark:text-red-400 @elseif($diasRestantes < 30) text-yellow-600 dark:text-yellow-400 @else text-zinc-600 dark:text-zinc-400 @endif">
                                             {{ $vencimiento->format('d/m/Y') }}
                                             @if($diasRestantes < 0)
                                                 (Vencido)
                                             @elseif($diasRestantes < 30)
-                                                ({{ round($diasRestantes) }} días)
+                                                ({{ $diasRestantes }} día{{ $diasRestantes != 1 ? 's' : '' }})
                                             @endif
                                         </span>
                                     </td>
