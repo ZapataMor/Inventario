@@ -12,7 +12,7 @@ class UsersSeeder extends Seeder
     {
         // Usuario administrador
         DB::table('users')->insert([
-            'nombre' => 'Administrador',
+            'name' => 'Administrador',
             'email' => 'admin@farmacia.com',
             'password' => Hash::make('admin123'),
             'role_id' => 1, // El rol 'admin'
@@ -20,9 +20,9 @@ class UsersSeeder extends Seeder
             'updated_at' => now(),
         ]);
 
-        // Usuario empleado opcional
+        // Usuario empleado
         DB::table('users')->insert([
-            'nombre' => 'Empleado',
+            'name' => 'Empleado',
             'email' => 'empleado@farmacia.com',
             'password' => Hash::make('empleado123'),
             'role_id' => 2, // El rol 'empleado'

@@ -60,31 +60,35 @@ Route::middleware(['auth'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | CRUD de Usuarios
+    | CRUD de Usuarios - Solo Administradores
     |--------------------------------------------------------------------------
     */
-    Route::resource('users', UserController::class);
+    Route::middleware(['role:admin'])->group(function () {
+        Route::resource('users', UserController::class);
+    });
 
     /*
     |--------------------------------------------------------------------------
-    | CRUD de Productos
+    | CRUD de Productos - Admin y Empleados
     |--------------------------------------------------------------------------
     */
-    Route::resource('products', ProductController::class);
+    Route::middleware(['role:admin,empleado'])->group(function () {
+        Route::resource('products', ProductController::class);
+    });
 
     /*
     |--------------------------------------------------------------------------
-    | CRUD de Ventas
+    | CRUD de Ventas - Admin y Empleados
     |--------------------------------------------------------------------------
     */
-    Route::resource('sales', SaleController::class)->except(['edit', 'update', 'destroy']);
-    
-    /*
-    |--------------------------------------------------------------------------
-    | Eliminar detalle de venta
-    |--------------------------------------------------------------------------
-    */
-    Route::delete('sale-details/{saleDetail}', [SaleDetailController::class, 'destroy'])
-        ->name('sale-details.destroy');
+    Route::middleware(['role:admin,empleado'])->group(function () {
+        Route::resource('sales', SaleController::class)->except(['edit', 'update', 'destroy']);
+        
+        // Solo admin puede eliminar detalles de venta
+        Route::middleware(['role:admin'])->group(function () {
+            Route::delete('sale-details/{saleDetail}', [SaleDetailController::class, 'destroy'])
+                ->name('sale-details.destroy');
+        });
+    });
 
 });

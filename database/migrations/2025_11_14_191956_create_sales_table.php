@@ -14,7 +14,8 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 
-            $table->dateTime('fecha_venta');
+            $table->dateTime('fecha_venta')->nullable();
+            $table->decimal('total', 10, 2)->default(0);
 
             $table->timestamps();
         });

@@ -22,10 +22,16 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+        ];
+    }
+
     /**
      * Get the user's initials from their name.
-     * 
-     * @return string
      */
     public function initials(): string
     {
@@ -33,21 +39,49 @@ class User extends Authenticatable
         $words = explode(' ', trim($name));
         
         if (count($words) >= 2) {
-            // Si tiene dos o más palabras, toma la primera letra de cada una
             return strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
         }
         
-        // Si solo tiene una palabra, toma las dos primeras letras
         return strtoupper(substr($name, 0, 2));
     }
 
+    /**
+     * Relación con el modelo Role
+     */
     public function role()
     {
         return $this->belongsTo(Role::class);
     }
 
+    /**
+     * Relación con ventas
+     */
     public function sales()
     {
         return $this->hasMany(Sale::class);
+    }
+
+    /**
+     * Verifica si el usuario tiene un rol específico
+     */
+    public function hasRole(string $role): bool
+    {
+        return $this->role?->nombre === $role;
+    }
+
+    /**
+     * Verifica si el usuario es administrador
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
+    /**
+     * Verifica si el usuario es empleado
+     */
+    public function isEmpleado(): bool
+    {
+        return $this->hasRole('empleado');
     }
 }

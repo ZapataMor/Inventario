@@ -9,7 +9,7 @@ class ProductController extends Controller
 {
     public function index()
     {
-        $productos = Product::all(); 
+        $productos = Product::with(['createdBy', 'updatedBy'])->latest()->get(); 
         return view('products.index', compact('productos'));
     }
 
@@ -21,13 +21,20 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nombre' => 'required',
+            'nombre' => 'required|string|max:100',
             'cantidad_unidades' => 'required|integer|min:0',
-            'fecha_vencimiento' => 'required|date',
+            'fecha_vencimiento' => 'required|date|after:today',
             'peso_por_unidad' => 'required|numeric|min:0',
         ]);
 
-        Product::create($request->all());
+        Product::create([
+            'nombre' => $request->nombre,
+            'cantidad_unidades' => $request->cantidad_unidades,
+            'fecha_vencimiento' => $request->fecha_vencimiento,
+            'peso_por_unidad' => $request->peso_por_unidad,
+            'creado_por' => auth()->id(),
+            'actualizado_por' => auth()->id(),
+        ]);
 
         return redirect()->route('products.index')
             ->with('success', 'Producto creado correctamente.');
@@ -35,6 +42,7 @@ class ProductController extends Controller
 
     public function show(Product $product)
     {
+        $product->load(['createdBy', 'updatedBy']);
         return view('products.show', compact('product'));
     }
 
@@ -46,13 +54,19 @@ class ProductController extends Controller
     public function update(Request $request, Product $product)
     {
         $request->validate([
-            'nombre' => 'required',
+            'nombre' => 'required|string|max:100',
             'cantidad_unidades' => 'required|integer|min:0',
             'fecha_vencimiento' => 'required|date',
             'peso_por_unidad' => 'required|numeric|min:0',
         ]);
 
-        $product->update($request->all());
+        $product->update([
+            'nombre' => $request->nombre,
+            'cantidad_unidades' => $request->cantidad_unidades,
+            'fecha_vencimiento' => $request->fecha_vencimiento,
+            'peso_por_unidad' => $request->peso_por_unidad,
+            'actualizado_por' => auth()->id(),
+        ]);
 
         return redirect()->route('products.index')
             ->with('success', 'Producto actualizado correctamente.');
@@ -63,6 +77,6 @@ class ProductController extends Controller
         $product->delete();
 
         return redirect()->route('products.index')
-            ->with('success', 'Producto eliminado.');
+            ->with('success', 'Producto eliminado correctamente.');
     }
 }

@@ -15,11 +15,11 @@ return new class extends Migration
             $table->date('fecha_vencimiento');
             $table->decimal('peso_por_unidad', 8, 2);
             
-            $table->unsignedBigInteger('creado_por');
-            $table->foreign('creado_por')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('creado_por')->nullable();
+            $table->foreign('creado_por')->references('id')->on('users')->onDelete('set null');
             
-            $table->unsignedBigInteger('actualizado_por');
-            $table->foreign('actualizado_por')->references('id')->on('users')->onDelete('cascade');
+            $table->unsignedBigInteger('actualizado_por')->nullable();
+            $table->foreign('actualizado_por')->references('id')->on('users')->onDelete('set null');
 
             $table->timestamps();
         });
