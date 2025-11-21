@@ -34,6 +34,8 @@ class ProductController extends Controller
             'cantidad_unidades' => 'required|integer|min:0',
             'fecha_vencimiento' => 'required|date|after:today',
             'peso_por_unidad' => 'required|numeric|min:0',
+            'precio_unitario' => 'required|numeric|min:0',
+            'tipo_unidad' => 'required|in:mg,ml',
         ]);
 
         Product::create([
@@ -41,6 +43,8 @@ class ProductController extends Controller
             'cantidad_unidades' => $request->cantidad_unidades,
             'fecha_vencimiento' => $request->fecha_vencimiento,
             'peso_por_unidad' => $request->peso_por_unidad,
+            'precio_unitario' => $request->precio_unitario,
+            'tipo_unidad' => $request->tipo_unidad,
             'creado_por' => auth()->id(),
             'actualizado_por' => auth()->id(),
         ]);
@@ -67,6 +71,8 @@ class ProductController extends Controller
             'cantidad_unidades' => 'required|integer|min:0',
             'fecha_vencimiento' => 'required|date',
             'peso_por_unidad' => 'required|numeric|min:0',
+            'precio_unitario' => 'required|numeric|min:0',
+            'tipo_unidad' => 'required|in:mg,ml',
         ]);
 
         $product->update([
@@ -74,6 +80,8 @@ class ProductController extends Controller
             'cantidad_unidades' => $request->cantidad_unidades,
             'fecha_vencimiento' => $request->fecha_vencimiento,
             'peso_por_unidad' => $request->peso_por_unidad,
+            'precio_unitario' => $request->precio_unitario,
+            'tipo_unidad' => $request->tipo_unidad,
             'actualizado_por' => auth()->id(),
         ]);
 

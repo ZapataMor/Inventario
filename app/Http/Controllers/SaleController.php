@@ -58,8 +58,8 @@ class SaleController extends Controller
             foreach ($request->productos as $item) {
                 $producto = Product::find($item['id']);
 
-                // Calcular subtotal
-                $subtotal = $producto->peso_por_unidad * $item['cantidad'];
+                // Calcular subtotal con el precio
+                $subtotal = $producto->precio_unitario * $item['cantidad'];
                 $total += $subtotal;
 
                 // Crear detalle de venta
@@ -67,10 +67,11 @@ class SaleController extends Controller
                     'sale_id' => $venta->id,
                     'product_id' => $producto->id,
                     'cantidad' => $item['cantidad'],
+                    'precio_unitario' => $producto->precio_unitario,
                     'subtotal' => $subtotal
                 ]);
 
-                // ⭐ DESCUENTO DE INVENTARIO
+                // Descuento de inventario
                 $producto->cantidad_unidades -= $item['cantidad'];
                 $producto->save();
             }
@@ -82,7 +83,7 @@ class SaleController extends Controller
             DB::commit();
 
             return redirect()->route('sales.index')
-                ->with('success', 'Venta registrada correctamente. Se han descontado los productos del inventario.');
+                ->with('success', 'Venta registrada correctamente. Total: $' . number_format($total, 2));
 
         } catch (\Exception $e) {
             DB::rollBack();

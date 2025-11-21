@@ -6,7 +6,7 @@
             
             <div class="mt-4 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
                 <a href="{{ route('products.create') }}" 
-                   class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
+                    class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                     </svg>
@@ -17,10 +17,10 @@
                 <form method="GET" action="{{ route('products.index') }}" class="w-full sm:w-auto">
                     <div class="relative">
                         <input type="text" 
-                               name="search" 
-                               value="{{ request('search') }}"
-                               placeholder="Buscar productos..." 
-                               class="w-full sm:w-64 pl-10 pr-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                name="search" 
+                                value="{{ request('search') }}"
+                                placeholder="Buscar productos..." 
+                                class="w-full sm:w-64 pl-10 pr-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white placeholder-zinc-500 dark:placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                         <svg class="absolute left-3 top-2.5 w-4 h-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
@@ -128,14 +128,14 @@
                     <h2 class="text-xl font-semibold text-zinc-900 dark:text-white mb-2">No se encontraron productos</h2>
                     <p class="text-zinc-600 dark:text-zinc-400 mb-4">No hay resultados para "{{ request('search') }}"</p>
                     <a href="{{ route('products.index') }}" 
-                       class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
                         Ver todos los productos
                     </a>
                 @else
                     <h2 class="text-xl font-semibold text-zinc-900 dark:text-white mb-2">No hay productos registrados</h2>
                     <p class="text-zinc-600 dark:text-zinc-400 mb-4">Comienza agregando tu primer producto al inventario</p>
                     <a href="{{ route('products.create') }}" 
-                       class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
+                        class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition">
                         <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
@@ -151,7 +151,7 @@
                             <tr>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Nombre</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Cantidad</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Peso/Unidad</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Precio</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Vencimiento</th>
                                 <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Acciones</th>
                             </tr>
@@ -169,7 +169,9 @@
                                             {{ $product->cantidad_unidades }} unidades
                                         </span>
                                     </td>
-                                    <td class="px-6 py-4 text-sm text-zinc-600 dark:text-zinc-400">{{ number_format($product->peso_por_unidad, 2) }} kg</td>
+                                    <td class="px-6 py-4 text-sm font-medium text-zinc-900 dark:text-white">
+                                        ${{ number_format($product->precio_unitario, 0, ',', '.') }}
+                                    </td>
                                     <td class="px-6 py-4 text-sm">
                                         @php
                                             $vencimiento = \Carbon\Carbon::parse($product->fecha_vencimiento);
@@ -187,7 +189,7 @@
                                     <td class="px-6 py-4">
                                         <div class="flex gap-2">
                                             <a href="{{ route('products.show', $product) }}" 
-                                               class="inline-flex items-center px-3 py-1.5 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                                                class="inline-flex items-center px-3 py-1.5 text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
                                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
@@ -195,15 +197,15 @@
                                                 Ver
                                             </a>
                                             <a href="{{ route('products.edit', $product) }}" 
-                                               class="inline-flex items-center px-3 py-1.5 text-sm text-zinc-600 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300">
+                                                class="inline-flex items-center px-3 py-1.5 text-sm text-zinc-600 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300">
                                                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                                 </svg>
                                                 Editar
                                             </a>
                                             <form method="POST" action="{{ route('products.destroy', $product) }}" 
-                                                  onsubmit="return confirm('¿Estás seguro de eliminar este producto?')"
-                                                  class="inline">
+                                                onsubmit="return confirm('¿Estás seguro de eliminar este producto?')"
+                                                class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" 

@@ -18,7 +18,7 @@ class SaleDetailController extends Controller
             $producto = $saleDetail->product;
             $venta = $saleDetail->sale;
 
-            // ⭐ DEVOLVER STOCK AL INVENTARIO
+            // Devolver stock al inventario
             $producto->cantidad_unidades += $cantidad;
             $producto->save();
 
@@ -31,7 +31,7 @@ class SaleDetailController extends Controller
 
             DB::commit();
 
-            return back()->with('success', "Detalle eliminado. Se han devuelto {$cantidad} unidades de '{$producto->nombre}' al inventario.");
+            return back()->with('success', "Detalle eliminado. Se han devuelto {$cantidad} unidades de '{$producto->nombre}' al inventario y se actualizó el total de la venta.");
 
         } catch (\Exception $e) {
             DB::rollBack();

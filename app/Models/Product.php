@@ -14,6 +14,8 @@ class Product extends Model
         'cantidad_unidades',
         'fecha_vencimiento',
         'peso_por_unidad',
+        'precio_unitario',
+        'tipo_unidad',
         'creado_por',
         'actualizado_por',
     ];
@@ -23,6 +25,7 @@ class Product extends Model
         return [
             'fecha_vencimiento' => 'date',
             'peso_por_unidad' => 'decimal:2',
+            'precio_unitario' => 'decimal:2',
         ];
     }
 
@@ -39,5 +42,13 @@ class Product extends Model
     public function updatedBy()
     {
         return $this->belongsTo(User::class, 'actualizado_por');
+    }
+
+    /**
+     * Obtiene el nombre de la unidad formateado
+     */
+    public function getUnidadFormateada(): string
+    {
+        return $this->tipo_unidad === 'mg' ? 'mg' : 'ml';
     }
 }

@@ -40,7 +40,7 @@
             <!-- Resumen Total -->
             <div class="bg-gradient-to-br from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 rounded-xl p-6 text-white">
                 <h2 class="text-lg font-semibold mb-2">Total de la Venta</h2>
-                <p class="text-4xl font-bold">{{ number_format($sale->total, 2) }} <span class="text-xl">kg</span></p>
+                <p class="text-4xl font-bold">${{ number_format($sale->total, 2) }}</p>
                 <p class="text-sm opacity-90 mt-2">{{ $sale->saleDetails->count() }} producto(s)</p>
             </div>
 
@@ -75,8 +75,9 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Producto</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Cantidad</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Peso Unitario</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Subtotal (kg)</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Contenido</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Precio Unit.</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Subtotal</th>
                             @if(auth()->user()->role->nombre === 'admin')
                                 <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Acciones</th>
                             @endif
@@ -92,17 +93,20 @@
                                     {{ $detail->cantidad }} unidades
                                 </td>
                                 <td class="px-6 py-4 text-sm text-zinc-600 dark:text-zinc-400">
-                                    {{ number_format($detail->product->peso_por_unidad, 2) }} kg
+                                    {{ number_format($detail->product->peso_por_unidad, 2) }} {{ $detail->product->tipo_unidad }}
+                                </td>
+                                <td class="px-6 py-4 text-sm text-zinc-900 dark:text-white font-medium">
+                                    ${{ number_format($detail->precio_unitario, 2) }}
                                 </td>
                                 <td class="px-6 py-4">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400">
-                                        {{ number_format($detail->subtotal, 2) }} kg
+                                        ${{ number_format($detail->subtotal, 2) }}
                                     </span>
                                 </td>
                                 @if(auth()->user()->role->nombre === 'admin')
                                     <td class="px-6 py-4">
                                         <form method="POST" action="{{ route('sale-details.destroy', $detail) }}" 
-                                                onsubmit="return confirm('¿Estás seguro de eliminar este detalle?')"
+                                                onsubmit="return confirm('¿Estás seguro de eliminar este detalle? Se devolverá el stock al inventario.')"
                                                 class="inline">
                                             @csrf
                                             @method('DELETE')
@@ -121,12 +125,12 @@
                     </tbody>
                     <tfoot class="bg-zinc-50 dark:bg-zinc-900 border-t-2 border-zinc-300 dark:border-zinc-600">
                         <tr>
-                            <td colspan="{{ auth()->user()->role->nombre === 'admin' ? 3 : 3 }}" class="px-6 py-4 text-right text-sm font-semibold text-zinc-900 dark:text-white">
+                            <td colspan="{{ auth()->user()->role->nombre === 'admin' ? 4 : 4 }}" class="px-6 py-4 text-right text-sm font-semibold text-zinc-900 dark:text-white">
                                 Total:
                             </td>
                             <td class="px-6 py-4" colspan="2">
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
-                                    {{ number_format($sale->total, 2) }} kg
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-base font-bold bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400">
+                                    ${{ number_format($sale->total, 2) }}
                                 </span>
                             </td>
                         </tr>

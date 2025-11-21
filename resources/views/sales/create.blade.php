@@ -42,18 +42,21 @@
                                             @foreach($productos as $producto)
                                                 <option value="{{ $producto->id }}" 
                                                         data-stock="{{ $producto->cantidad_unidades }}"
-                                                        data-peso="{{ $producto->peso_por_unidad }}">
-                                                    {{ $producto->nombre }} (Stock: {{ $producto->cantidad_unidades }})
+                                                        data-peso="{{ $producto->peso_por_unidad }}"
+                                                        data-precio="{{ $producto->precio_unitario }}"
+                                                        data-tipo="{{ $producto->tipo_unidad }}">
+                                                    {{ $producto->nombre }} - ${{ number_format($producto->precio_unitario, 2) }} (Stock: {{ $producto->cantidad_unidades }})
                                                 </option>
                                             @endforeach
                                         </select>
                                         <p x-show="item.stock > 0" class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-                                            Stock disponible: <span x-text="item.stock"></span> unidades | 
-                                            Peso: <span x-text="item.peso"></span> kg/unidad
+                                            Stock: <span x-text="item.stock"></span> unidades | 
+                                            <span x-text="item.peso"></span> <span x-text="item.tipo_unidad"></span>/unidad | 
+                                            Precio: $<span x-text="item.precio.toFixed(2)"></span>
                                         </p>
                                     </div>
 
-                                    <div class="w-32">
+                                    <div class="w-28">
                                         <label :for="'cantidad_' + index" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                                             Cantidad
                                         </label>
@@ -74,8 +77,8 @@
                                         <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">
                                             Subtotal
                                         </label>
-                                        <div class="px-4 py-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg text-sm text-zinc-900 dark:text-white">
-                                            <span x-text="(item.peso * item.cantidad).toFixed(2)"></span> kg
+                                        <div class="px-4 py-2 bg-green-100 dark:bg-green-900/20 rounded-lg text-sm font-semibold text-green-800 dark:text-green-400">
+                                            $<span x-text="(item.precio * item.cantidad).toFixed(2)"></span>
                                         </div>
                                     </div>
 
@@ -99,13 +102,23 @@
                         @enderror
                     </div>
 
-                    <!-- Total -->
+                    <!-- Resumen de Totales -->
                     <div class="pt-4 border-t border-zinc-200 dark:border-zinc-700">
-                        <div class="flex items-center justify-between">
-                            <span class="text-lg font-semibold text-zinc-900 dark:text-white">Total:</span>
-                            <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                                <span x-text="total.toFixed(2)"></span> kg
-                            </span>
+                        <div class="bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-lg p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm text-zinc-600 dark:text-zinc-400">Total de productos:</span>
+                                <span class="text-sm font-medium text-zinc-900 dark:text-white" x-text="products.length"></span>
+                            </div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-sm text-zinc-600 dark:text-zinc-400">Total de unidades:</span>
+                                <span class="text-sm font-medium text-zinc-900 dark:text-white" x-text="getTotalUnidades()"></span>
+                            </div>
+                            <div class="flex items-center justify-between pt-2 border-t border-blue-200 dark:border-blue-700">
+                                <span class="text-lg font-semibold text-zinc-900 dark:text-white">Total a Pagar:</span>
+                                <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                                    $<span x-text="total.toFixed(2)"></span>
+                                </span>
+                            </div>
                         </div>
                     </div>
 
@@ -138,7 +151,9 @@
                         id: '',
                         cantidad: 1,
                         stock: 0,
-                        peso: 0
+                        peso: 0,
+                        precio: 0,
+                        tipo_unidad: 'mg'
                     });
                 },
 
@@ -154,13 +169,21 @@
                     if (option.value) {
                         this.products[index].stock = parseInt(option.dataset.stock);
                         this.products[index].peso = parseFloat(option.dataset.peso);
+                        this.products[index].precio = parseFloat(option.dataset.precio);
+                        this.products[index].tipo_unidad = option.dataset.tipo;
                         this.calculateTotal();
                     }
                 },
 
                 calculateTotal() {
                     this.total = this.products.reduce((sum, item) => {
-                        return sum + (item.peso * item.cantidad);
+                        return sum + (item.precio * item.cantidad);
+                    }, 0);
+                },
+
+                getTotalUnidades() {
+                    return this.products.reduce((sum, item) => {
+                        return sum + parseInt(item.cantidad || 0);
                     }, 0);
                 }
             }

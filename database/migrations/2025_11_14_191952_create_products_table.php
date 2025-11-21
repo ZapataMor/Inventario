@@ -14,6 +14,8 @@ return new class extends Migration
             $table->integer('cantidad_unidades');
             $table->date('fecha_vencimiento');
             $table->decimal('peso_por_unidad', 8, 2);
+            $table->decimal('precio_unitario', 10, 2)->default(0);
+            $table->enum('tipo_unidad', ['mg', 'ml'])->default('mg');
             
             $table->unsignedBigInteger('creado_por')->nullable();
             $table->foreign('creado_por')->references('id')->on('users')->onDelete('set null');

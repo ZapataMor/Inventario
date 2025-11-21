@@ -13,8 +13,17 @@ class SaleDetail extends Model
         'sale_id',
         'product_id',
         'cantidad',
+        'precio_unitario',
         'subtotal',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'precio_unitario' => 'decimal:2',
+            'subtotal' => 'decimal:2',
+        ];
+    }
 
     public function sale()
     {
